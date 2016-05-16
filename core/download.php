@@ -1,15 +1,17 @@
 <?php defined( 'ABSPATH' ) or die( 'Plugin file cannot be accessed directly.' );
 
-class sv_export{
-    /**
-    * Constructor
-    */
+new mc_survey_export();
+class mc_survey_export{
+    
     public function __construct(){
-        
-        if( isset($_GET['sv-report']) ){// && is_admin() && is_numeric($_GET['sv-report']) && current_user_can( 'manage_options' ) ){
-            
-            $csv = $this->generate_csv();
+        add_action('init', array($this, 'print_csv'));
+    }
 
+    function print_csv(){
+        
+        if( isset($_GET['mc-survey-download']) && is_admin() ){
+            
+            $csv = $this->get_survey();
             header("Pragma: public");
             header("Expires: 0");
             header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
@@ -22,32 +24,76 @@ class sv_export{
             exit;
         }
     }
-
-    /**
-    * Converting data to CSV
-    */
-    function generate_csv(){
+    
+    function get_fields($post_id){
         
-        $sv_admin = new sv_admin;
-        $data = $sv_admin->get_response_data($_GET['sv-report']);
-        $csv="";
+        global $wpdb;
+        $table_name = $wpdb->prefix.'mc_survey_fields';
         
-        if(!is_array($data))
-            return false;
+        $prepare = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `post_id` = %s ORDER BY `order` ASC;", array($post_id));
+        $fields = $wpdb->get_results($prepare);
         
-        if(count($data) == 0)
-            return false;
+        return $fields;
+    }
+    
+    function get_survey(){
+        
+        $post_id = $_GET['mc-survey-download'];
+        
+        $fields = $this->get_fields($post_id);
+        $sql_arr = array();
+        
+        foreach($fields as $key=>$field){
             
-        // FOREACH ROW
-        foreach ($data as $row){
-            // FOREACH CELL
+            $field_attr = unserialize($field->attributes);
+            $q = trim(strip_tags($field_attr['question']));
+            array_push($sql_arr, "MAX(CASE WHEN m.`meta_key` = '_field_{$field->id}' THEN m.`meta_value` END) AS '{$q}'");
+        }
+        $case = implode(", ", $sql_arr);
+        
+        global $wpdb;
+        $prep = $wpdb->prepare("SELECT  
+                                    p.`post_date`, 
+                                    u.`user_nicename`,
+                                    {$case}
+                                    
+                                    FROM `wp_posts` p 
+                                    JOIN `wp_postmeta` m ON p.`ID` = m.`post_id`
+                                    LEFT OUTER JOIN `wp_users` u ON p.`post_author` = u.`ID`
+                                    
+                                    WHERE p.`post_type` = 'mc_survey_response'
+                                    AND m.`post_id` IN 
+                
+                                    (SELECT m.`post_id` 
+                                    FROM `wp_posts` p JOIN `wp_postmeta` m ON p.`ID` = m.`post_id`
+                                    WHERE p.`post_type` = 'mc_survey_response'
+                                    AND m.`meta_key` = '_form_id' 
+                                    AND m.`meta_value` = '%s')
+                                    
+                                    GROUP BY p.ID", array($post_id));
+
+        $res = $wpdb->get_results($prep, 'ARRAY_A');
+
+        if(empty($res))
+            exit;
+        
+        $csv = "";
+        $csv_header = array_keys($res[0]);
+        array_unshift($res, $csv_header);
+        
+        foreach($res as $row){
+            
             foreach ($row as $cell){
+                
+                $ser = unserialize($cell);
+                if($ser !== false)
+                    $cell = $ser;
+                
                 $cell = is_array($cell) ? implode($cell, ',') : $cell;
                 $csv .= $this->wrap($cell);
             }
-            $csv .= "\n";
+            $csv .= "\r\n";
         }
-            
         return $csv;
     }
     

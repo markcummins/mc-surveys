@@ -9,7 +9,7 @@ Author: Mark Cummins
 
 include_once plugin_dir_path( __FILE__ ) . "core/init.php";
 
-function mc_surveys_activate(){
+function mc_survey_activate(){
     
     global $wpdb;
 	$charset_collate = $wpdb->get_charset_collate();
@@ -25,4 +25,4 @@ function mc_surveys_activate(){
 	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 	dbDelta($sql);
 }
-register_activation_hook(__FILE__, 'mc_surveys_activate');
+register_activation_hook(__FILE__, 'mc_survey_activate');

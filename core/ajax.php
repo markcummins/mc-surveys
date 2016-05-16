@@ -47,7 +47,10 @@ class mc_survey_ajax{
         global $wpdb;
         $mc_survey_fields = new mc_survey_fields;   
         $table_name = $wpdb->mc_survey_fields;
-        $attributes = serialize(array());
+        
+        $default_atts = array();
+        $default_atts['input_type'] = 'text';
+        $attributes = serialize($default_atts);
         
         $wpdb->query($wpdb->prepare("INSERT INTO {$table_name} (`post_id`, `type`, `order`, `attributes`) VALUES (%s, '_text', '0', '{$attributes}')", array($post_id)));
         
@@ -67,13 +70,14 @@ class mc_survey_ajax{
         
         $list_defaults = array();
         
-        $list_defaults['label'] = 'Label';
+        $list_defaults['question'] = 'Question';
         $list_defaults['list_type'] = 'checkbox';
+        $list_defaults['graph_type'] = 'line';
         
         $list_defaults['options'] = array();
-        array_push($list_defaults['options'], array('label'=>'Item 1'));
-        array_push($list_defaults['options'], array('label'=>'Item 2'));
-        array_push($list_defaults['options'], array('label'=>'Item 3'));
+        array_push($list_defaults['options'], array('question'=>'Question 1'));
+        array_push($list_defaults['options'], array('question'=>'Question 2'));
+        array_push($list_defaults['options'], array('question'=>'Question 3'));
         
         $attributes = serialize($list_defaults);
         
@@ -96,7 +100,7 @@ class mc_survey_ajax{
         
         if($add){
             $mc_survey_fields = new mc_survey_fields;
-            $mc_survey_fields->get_admin_list_item($post_id, $field_id, $key_id, 'New Item');
+            $mc_survey_fields->get_admin_list_item($post_id, $field_id, $key_id);
         }
         
         wp_die();
@@ -126,7 +130,7 @@ class mc_survey_ajax{
         $field_atts = unserialize($field_atts);
         
         if($update == 'add')
-            array_push($field_atts['options'], array('label'=>'New Item'));        
+            array_push($field_atts['options'], array('question'=>'New Item'));
         elseif($update == 'remove')
             unset($field_atts['options'][$key_id]);
         

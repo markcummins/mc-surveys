@@ -1,9 +1,9 @@
 var $ = jQuery.noConflict();
 $(document).ready(function () {
-
-    var base_url = window.location.origin + '/wordpress/wp-admin/admin-ajax.php';
+     
+    var base_url = ajaxurl;
     
-    // ADD NEW TEXT QUESTIONS
+    // ADD NEW QUESTION
     $(".mc-survey-add-question").click(function () {
         
         var post_id = $(this).data('post-id');
