@@ -1,3 +1,87 @@
+/*ARCHIVE*/
+.mc-survey-archive article{
+    margin-bottom: 20px;
+    clear: both;
+}
+.mc-survey-archive-thumb, .mc-survey-archive-meta{
+    display: inline-block;
+    vertical-align: top;
+    padding: 0px;
+    margin:0px;
+}
+.mc-survey-archive-thumb img{
+    width: 100%;
+}
+.mc-survey-archive-meta{
+    padding-left: 16px;
+    width: 100%;
+}
+@media(min-width:768px){
+    .mc-survey-archive-thumb{
+        max-width: 20%;
+    }
+    .mc-survey-archive-meta{
+        max-width: 80%;
+    }
+}
+@media(min-width:992px){
+    .mc-survey-archive-thumb{
+        max-width: 20%;
+    }
+    .mc-survey-archive-meta{
+        max-width: 80%;
+    }
+}
+@media(min-width:1200px){
+    .mc-survey-archive-thumb{
+        max-width: 15%;
+    }
+    .mc-survey-archive-meta{
+        max-width: 85%;
+    }
+}
+/*SINGLE*/
+.mc-survey-single article{
+    margin-bottom: 20px;
+    clear: both;
+}
+.mc-survey-single-thumb, .mc-survey-single-meta{
+    display: inline-block;
+    vertical-align: top;
+    padding: 0px;
+    margin:0px;
+}
+.mc-survey-single-thumb img{
+    width: 100%;
+}
+.mc-survey-single-meta{
+    padding-left: 16px;
+    width: 100%;
+}
+@media(min-width:768px){
+    .mc-survey-single-thumb{
+        max-width: 20%;
+    }
+    .mc-survey-single-meta{
+        max-width: 80%;
+    }
+}
+@media(min-width:992px){
+    .mc-survey-single-thumb{
+        max-width: 20%;
+    }
+    .mc-survey-single-meta{
+        max-width: 80%;
+    }
+}
+@media(min-width:1200px){
+    .mc-survey-single-thumb{
+        max-width: 15%;
+    }
+    .mc-survey-single-meta{
+        max-width: 85%;
+    }
+}
 /*ALERTS*/
 .mc-alert{
     padding: 15px;
@@ -77,12 +161,10 @@ p.mc-survey-response::before{
         -webkit-transform: rotate( 29deg ) skew( -35deg );
     width:  20px;
 }
-
 p.mc-survey-response{
     float: left;   
     margin: 5px 45px 5px 20px;         
 }
-
 p.mc-survey-response::before {
     box-shadow: -2px 2px 2px 0 rgba( 178, 178, 178, .4 );
     left: -9px;           
@@ -93,12 +175,10 @@ p.mc-survey-response::before {
 .mc-survey-more-link {
     display: block;
 }
-
-#mc-survey-form canvas{
-    max-width: 450px;
-    max-height: 450px;
+canvas.mc-survey-canvas{
+    max-width: 425px;
+    max-height: 425px;
 }
-
 .mc-clearfix{
     content: "";
     display: table;

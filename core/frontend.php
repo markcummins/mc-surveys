@@ -8,7 +8,16 @@ class mc_frontend{
         
     public function __construct() {
         
-        add_action( 'mc_get_survey', array($this, 'get_survey'), 10, 1 );
+        add_action( 'mc_get_survey', array($this, 'get_survey'));
+        add_action( 'mc_get_default_thumbnail', array($this, 'get_default_thumbnail'));
+    }
+    
+    function get_default_thumbnail(){
+        
+        $src = plugins_url('mc-surveys/assets/img/default-thumbnail.png');
+        $link = get_the_permalink();
+        
+        echo "<a href='{$link}'><img src='{$src}'/></a>";
     }
     
     function user_can_do_survey($post_id, $settings_meta, $user_has_done_survey){
@@ -84,36 +93,44 @@ class mc_frontend{
         $fields = $this->get_fields($post_id);
         $form_action = get_the_permalink($post_id); 
         $settings_meta = get_post_meta($post_id, '_mc_options', true); 
-        $settings_meta = empty($settings_meta)? array() : $settings_meta; ?>
+        $settings_meta = empty($settings_meta)? array() : $settings_meta;               
         
-        <form id="mc-survey-form" method='post' action='<?= $form_action; ?>'>
-        <div id="mc-validation-errors"></div>
-        
-        <?php 
         $user_has_done_survey = $this->user_has_done_survey($post_id);
         $user_can_do_survey = $this->user_can_do_survey($post_id, $settings_meta, $user_has_done_survey);
-        $user_can_see_results = $this->user_can_see_results($settings_meta);
-                
-        foreach($fields as $field){ 
+        $user_can_see_results = $this->user_can_see_results($settings_meta); 
             
-            $field_attr = unserialize($field->attributes);
-            
-            if($user_can_do_survey){
-                switch ($field->type){
-                    case '_text': $this->get_text_question($field->id, $field_attr ,$user_can_do_survey); break;
-                    case '_list': $this->get_list_question($field->id, $field_attr ,$user_can_do_survey); break;
+        if($user_can_do_survey): ?>
+            <form id="mc-survey-form" method='post' action='<?= $form_action; ?>'>
+            <div id="mc-validation-errors"></div> 
+            <?php
+
+            foreach($fields as $field){
+
+                $field_attr = unserialize($field->attributes);
+
+                if($user_can_do_survey){
+                    switch ($field->type){
+                        case '_text': $this->get_text_question($field->id, $field_attr ,$user_can_do_survey); break;
+                        case '_list': $this->get_list_question($field->id, $field_attr ,$user_can_do_survey); break;
+                    }
                 }
-            }
-                        
-            if($user_has_done_survey && $user_can_see_results)
-                $this->show_result($post_id, $field);
-        } ?>
-        
-        <input type="hidden" name="mc-survey-submission" value="<?= $post_id; ?>" />
-        <?php wp_nonce_field(-1,'mc_noncename'); ?>
-        <hr/>
-        <button class="btn btn-primary" type="submit">Submit</button>
-        </form>
+
+                if($user_has_done_survey && $user_can_see_results)
+                    $this->show_result($post_id, $field);
+            } ?>
+
+            <input type="hidden" name="mc-survey-submission" value="<?= $post_id; ?>" />
+            <?php wp_nonce_field(-1,'mc_noncename'); ?>
+            <hr/>
+            <button class="btn btn-primary" type="submit">Submit</button>
+            </form>
+        <?php else: ?>
+        <?php
+            if($user_has_done_survey && $user_can_see_results){
+                foreach($fields as $field)
+                    $this->show_result($post_id, $field);
+            } ?>
+        <?php endif; ?>
         
     <?php }
     
@@ -216,7 +233,7 @@ class mc_frontend{
             $chartjs['options']['scales']['yAxes'][]['ticks']['beginAtZero'] = true;            
             
             $json = json_encode($chartjs);            
-            echo "<canvas class='mc-survey-canvas' data-json='{$json}' width='100' height='100'></canvas>";
+            echo "<canvas class='mc-survey-canvas' data-json='{$json}' width='300' height='300'></canvas>";
             echo '<div class="mc-clearfix"></div>';
         }
     }

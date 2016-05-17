@@ -15,6 +15,26 @@ class mc_survey_admin{
         add_action('admin_enqueue_scripts', array($this, 'add_admin_style'));
         add_action('admin_enqueue_scripts', array($this, 'add_admin_scripts'));
         add_action('save_post_mc_survey', array($this, 'save_post'), 10, 1);
+        
+        add_filter('excerpt_length', array($this, 'set_excerpt_length'));
+        add_action('pre_get_posts', array($this, 'exclude_unlisted_surveys_from_frontend'), 10, 1);
+    }
+    
+    function exclude_unlisted_surveys_from_frontend($q){
+        
+        if(is_post_type_archive('mc_survey'))
+            $q->set('post_status','publish');
+            
+        return $q;
+    }
+    
+    function set_excerpt_length($length) {
+        
+        global $post;
+        if ($post->post_type == 'mc_survey')
+            $length = 28;
+
+        return $length;
     }
 
     function add_style() {

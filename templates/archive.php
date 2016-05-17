@@ -1,35 +1,45 @@
 <?php get_header(); ?>
 
-        <div class="row">
-		<?php if ( have_posts() ) : ?>
+        <div class="mc-survey-archive">
+            <h1><?php _e('Surveys', 'mc-survey'); ?></h1>
 
-			<?php while ( have_posts() ) : the_post(); ?>
+            <?php if ( have_posts() ) : ?>
 
-                <article id="post-<?php the_ID(); ?>">
-                    <div class="col-sm-2 hidden-xs loop-thumbnail">
-                        <?php
-                        if ( has_post_thumbnail() )
-                            the_post_thumbnail( 'small', array('class' => "img-responsive"));
-                        ?>
-                    </div>
-                    <div class="col-sm-10">
-                        <h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a> </h3>
-                        <?php the_excerpt(); ?>
+                <?php while ( have_posts() ) : the_post(); ?>
 
-                        <i class="fa fa-fw fa-clock-o"></i>
-                        <?php the_time('F j, Y'); ?>
-                    </div>
+                    <article id="post-<?php the_ID(); ?>">
+                        <header class="mc-survey-archive-thumb">
+                            <?php if ( has_post_thumbnail() ): ?>
+                                <a href="<?php the_permalink(); ?>"><?php the_post_thumbnail(); ?></a>
+                            <?php else: ?>
+                                <?php do_action('mc_get_default_thumbnail'); ?>                                
+                            <?php endif; ?>
+                        </header><div class="mc-survey-archive-meta">
+                            <h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+                               
+                                <?php the_excerpt(); ?>
+                                    
+                                <?php $settings_meta = get_post_meta(get_the_id(), '_mc_options', true); ?>
+                                    <i><?php the_time('F j, Y'); ?></i>
+                                <?php if(is_array($settings_meta)): ?>
+                                    <?php if(array_key_exists('member-only', $settings_meta)) echo "<i> | ". __('Members Only', 'mc-survey') ."</i>"; ?>
+                                    <?php if(array_key_exists('closed', $settings_meta)) echo "<i> | ". __('Survey Closed', 'mc-survey') ."</i>"; ?>
+                                <?php endif; ?>
+                        </div>
+                    </article>
+                <?php endwhile;
+
+                // Previous/next page navigation.
+                the_posts_pagination( array(
+                    'prev_text'          => __( 'Previous page', 'mc_survey' ),
+                    'next_text'          => __( 'Next page', 'mc_survey' ),
+                    'before_page_number' => '<span class="meta-nav screen-reader-text">' . __( 'Page', 'mc_survey' ) . ' </span>',
+                ));
+            else : ?>
+                <article>
+                    <h3><?php _e("No surveys available", 'mc_survey'); ?></h3>
+                    <p><?php _e("There are currently no surveys available, check back soon for new content.", 'mc_survey'); ?></p>
                 </article>
-                <div class="clearfix"></div>
-
-			
-			<?php endwhile;
-
-		else :
-			
-            echo "<h3>". __("No surveys available", 'mc_survey') ."</h3>";
-            echo "<p>". __("There are currently no surveys available, check back soon for new content.", 'mc_survey') ."</p>";
-
-		endif; ?>
+            <?php endif; ?>
         </div>
 <?php get_footer(); ?>

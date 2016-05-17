@@ -2,25 +2,22 @@
     <div>
         <?php while ( have_posts() ) : the_post(); ?>
            
-            <div class="row">                
-                <header class="entry-header">
+            <div class="mc-survey-single">             
+                <header>
                     <br/>
-                    <div class="col-sm-4 col-md-3">
-                        <?php
-                        if ( has_post_thumbnail() )
-                            the_post_thumbnail( 'medium', array('class' => "img-responsive"));
-                        ?>
-                    </div>
-                    <div class="col-sm-8 col-md-9">
+                    <div class="mc-survey-single-thumb">
+                        <?php if ( has_post_thumbnail() ): ?>
+                            <a href="<?php the_permalink(); ?>"><?php the_post_thumbnail(); ?></a>
+                        <?php else: ?>
+                            <?php do_action('mc_get_default_thumbnail'); ?>                                
+                        <?php endif; ?>
+                    </div><div class="mc-survey-single-meta">
                         <h1 class="entry-title"><?php the_title(); ?></h1>
                         <?php the_content(); ?>
                     </div>
                 </header>
                 <article class="hentry">
-                    <div class="col-xs-12">
-                        <br/>
                         <?php do_action('mc_get_survey', get_the_id()); ?>
-                    </div>
                 </article>
             </div>
             

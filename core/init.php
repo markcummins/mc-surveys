@@ -7,7 +7,7 @@ class mc_survey{
         
         add_action( 'init', array($this, 'register_survey_questions_custom_post') );
         add_action( 'init', array($this, 'register_survey_responses_custom_post') );
-        add_action( 'init', array($this, 'my_custom_post_status') );
+        add_action( 'init', array($this, 'unlisted_custom_post_status') );
         add_filter( 'template_include', array($this, 'survey_templates') );
         $this->setup();
     }
@@ -26,16 +26,16 @@ class mc_survey{
             $wpdb->mc_survey_fields = $wpdb->prefix . 'mc_survey_fields';
     }
     
-    function my_custom_post_status(){
+    function unlisted_custom_post_status(){
         
         register_post_status( 'unlisted', array(
             'label'                     => _x( 'Unlisted', 'post' ),
-            'public'                    => false,
+            'public'                    => true,
             'exclude_from_search'       => true,
             'show_in_admin_all_list'    => false,
             'show_in_admin_status_list' => true,
             'label_count'               => _n_noop( 'Unlisted <span class="count">(%s)</span>', 'Unlisted <span class="count">(%s)</span>' ),
-        ) );
+        ));
     }
     
     function register_survey_questions_custom_post() {
@@ -162,7 +162,7 @@ class mc_survey{
 
             $theme_files = array('archive-mc_survey.php');
             $exists_in_theme = locate_template($theme_files, false);
-
+            
             if ( $exists_in_theme != '' ) {
                 return $exists_in_theme;
             } else {
@@ -174,7 +174,7 @@ class mc_survey{
 
             $theme_files = array('single-mc_survey.php');
             $exists_in_theme = locate_template($theme_files, false);
-
+            
             if ( $exists_in_theme != '' ) {
                 return $exists_in_theme;
             } else {

@@ -1,8 +1,8 @@
 <?php defined( 'ABSPATH' ) or die( 'Plugin file cannot be accessed directly.' );
 
 /*
-Plugin Name: Surveys
-Description: Creates Surveys
+Plugin Name: MC Surveys
+Description: Creates Simple Surveys
 Version: 2.0
 Author: Mark Cummins
 */
